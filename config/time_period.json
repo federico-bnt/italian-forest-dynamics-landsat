@@ -1,0 +1,35 @@
+{
+  "summer": {
+    "start_day_of_year": 152,
+    "end_day_of_year": 243
+  },
+  "max_cloud_cover_percent": 20,
+  "periods": {
+    "T1": {
+      "name": "Landsat 5 TM (1985-1991)",
+      "start_year": 1985,
+      "end_year": 1991,
+      "collection_ids": [
+        "LANDSAT/LT05/C02/T1_L2"
+      ]
+    },
+    "T2": {
+      "name": "Landsat 5 TM and Landsat 7 ETM+ (2006-2010)",
+      "start_year": 2006,
+      "end_year": 2010,
+      "collection_ids": [
+        "LANDSAT/LT05/C02/T1_L2",
+        "LANDSAT/LE07/C02/T1_L2"
+      ]
+    },
+    "T3": {
+      "name": "Landsat 8 OLI and Landsat 9 OLI-2 (2022-2025)",
+      "start_year": 2022,
+      "end_year": 2025,
+      "collection_ids": [
+        "LANDSAT/LC08/C02/T1_L2",
+        "LANDSAT/LC09/C02/T1_L2"
+      ]
+    }
+  }
+}

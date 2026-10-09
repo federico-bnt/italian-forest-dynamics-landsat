@@ -45,6 +45,24 @@ To capture long-term trends across 40 years of Earth Observation data, we analyz
 ## Proposed Workflow & Methodology
 To overcome local I/O bottlenecks and avoid storing hundreds of gigabytes of raw satellite tiles locally, the project adopts a **cloud-native geospatial Big Data pipeline** ("Bring code to data"):
 
+## Project Structure
+
+.
+├── BAND_GUIDE.md
+├── GEE_SETUP.md
+├── LICENSE
+├── README.md
+├── landsat_summer_composite.ipynb
+├── config/
+│   ├── areas.json
+│   └── time_period.json
+├── papers/
+│   ├── Cultural Values and Forest Dynamics.pdf
+│   └── Forestation Deforestation Dynamics Italy 1936-2018.pdf
+└── src/
+   └── landsat_composites.py
+
+
 ---
 
 ## 👥 Contributors & Authors

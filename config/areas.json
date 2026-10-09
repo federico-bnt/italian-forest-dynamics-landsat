@@ -1,0 +1,18 @@
+{
+  "gallura": {
+    "name": "Gallura",
+    "bbox": [8.82, 40.43, 9.83, 41.32]
+  },
+  "basilicata": {
+    "name": "Basilicata",
+    "bbox": [15.34, 39.89, 16.87, 41.07]
+  },
+  "alpi_apuane": {
+    "name": "Alpi Apuane",
+    "bbox": [9.85, 43.90, 10.55, 44.35]
+  },
+  "trento": {
+    "name": "Trento / Trentino",
+    "bbox": [10.45, 45.67, 12.25, 46.53]
+  }
+}
