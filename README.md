@@ -24,12 +24,12 @@ The key idea is to move beyond measuring **how much** forest cover has expanded 
 ---
 
 ## Case Studies & Regional Dynamics
-We analyze four distinct geographic regions in Italy, each representing specific socioeconomic drivers or ecological disturbances:
+We analyze four focused study areas in Italy, each representing specific ecological or land-use dynamics. Their bounding boxes are defined in `config/areas.json`:
 
-1. **Gallura (Sardinia):** Agro-pastoral abandonment, cork oak canopy shifts, and wildfire disturbance recovery (**NBR** focus).
-2. **Basilicata:** Inland Apennine depopulation and secondary succession over former agricultural land (**NDVI** focus).
-3. **Alpi Apuane (Tuscany):** High-altitude pasture abandonment, canopy closure, and biomass saturation (**EVI** focus).
-4. **Autonomous Province of Trento:** Abrupt forest loss and natural regeneration post-Storm Vaia (2018) (**NBR / Disturbance** focus).
+1. **Gallura (Limbara & Inland, Sardinia):** Agro-pastoral abandonment, cork oak canopy shifts, and wildfire recovery (**NBR** focus).
+2. **Lucanian Apennines (Val d'Agri, Basilicata):** Secondary succession over former agricultural land (**NDVI** focus).
+3. **Apuan Alps (Mountain Core, Tuscany):** High-altitude pasture abandonment and canopy closure (**EVI** focus).
+4. **Fiemme Valley & Paneveggio (Trentino):** Forest disturbance and regeneration after Storm Vaia (**NBR / disturbance** focus).
 
 ---
 

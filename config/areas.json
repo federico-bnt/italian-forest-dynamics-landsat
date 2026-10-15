@@ -1,18 +1,18 @@
 {
   "gallura": {
-    "name": "Gallura",
-    "bbox": [8.82, 40.43, 9.83, 41.32]
+    "name": "Gallura (Limbara & Inland)",
+    "bbox": [9.05, 40.78, 9.65, 41.08]
   },
   "basilicata": {
-    "name": "Basilicata",
-    "bbox": [15.34, 39.89, 16.87, 41.07]
+    "name": "Lucanian Apennines (Val d'Agri)",
+    "bbox": [15.65, 40.25, 16.25, 40.65]
   },
   "alpi_apuane": {
-    "name": "Alpi Apuane",
-    "bbox": [9.85, 43.90, 10.55, 44.35]
+    "name": "Apuan Alps (Mountain Core)",
+    "bbox": [10.12, 44.02, 10.45, 44.28]
   },
   "trento": {
-    "name": "Trento / Trentino",
-    "bbox": [10.45, 45.67, 12.25, 46.53]
+    "name": "Fiemme Valley & Paneveggio (Vaia Storm Area)",
+    "bbox": [11.45, 46.20, 11.85, 46.38]
   }
 }
