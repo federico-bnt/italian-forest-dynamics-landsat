@@ -8,6 +8,16 @@ CONFIG_DIR = PROJECT_ROOT / "config"
 AREA_KEYS = ("gallura", "basilicata", "alpi_apuane", "trento")
 
 
+def load_project_id(path=CONFIG_DIR / "project_id.json") -> str:
+    with Path(path).open(encoding="utf-8") as project_file:
+        project_id = json.load(project_file).get("gee_project_id")
+
+    if not isinstance(project_id, str) or not project_id.strip():
+        raise ValueError("config/project_id.json must define a non-empty gee_project_id.")
+
+    return project_id.strip()
+
+
 def load_areas(path=CONFIG_DIR / "areas.json"):
     with Path(path).open(encoding="utf-8") as areas_file:
         area_data = json.load(areas_file)

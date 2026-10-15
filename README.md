@@ -47,20 +47,27 @@ To overcome local I/O bottlenecks and avoid storing hundreds of gigabytes of raw
 
 ## Project Structure
 
+```text
 .
 ├── BAND_GUIDE.md
 ├── GEE_SETUP.md
 ├── LICENSE
 ├── README.md
+├── 02_indices_analysis.ipynb
 ├── landsat_summer_composite.ipynb
 ├── config/
 │   ├── areas.json
+│   ├── project_id.json
 │   └── time_period.json
 ├── papers/
 │   ├── Cultural Values and Forest Dynamics.pdf
 │   └── Forestation Deforestation Dynamics Italy 1936-2018.pdf
 └── src/
+   ├── area_analysis.py
+   ├── delta_analysis.py
+   ├── indices.py
    └── landsat_composites.py
+```
 
 
 ---

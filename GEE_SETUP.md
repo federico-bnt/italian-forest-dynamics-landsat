@@ -22,10 +22,13 @@ Complete the browser authorization prompt. Authentication is saved locally for l
 
 ## Initialize Earth Engine in Python
 
+Run from the repository root. The shared project ID is stored in `config/project_id.json` and loaded by the project helper.
+
 ```python
 import ee
+import src.landsat_composites as landsat_composites
 
-PROJECT_ID = "bd-506013"
+PROJECT_ID = landsat_composites.load_project_id()
 
 try:
     ee.Initialize(project=PROJECT_ID)
@@ -41,4 +44,5 @@ If initialization reports a permission error, confirm that:
 
 - The active Google account is the one granted access to the shared project. Re-run `earthengine authenticate` if needed.
 - The account has **Earth Engine User** and **Resource Viewer** roles on project `bd-506013`.
-- `PROJECT_ID` matches the shared GCP project ID exactly.
+- The `gee_project_id` value in `config/project_id.json` is correct.
+- If the 403 error names `serviceusage.services.use`, ask a project administrator to grant the required Service Usage permission.
