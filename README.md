@@ -66,7 +66,8 @@ To overcome local I/O bottlenecks and avoid storing hundreds of gigabytes of raw
    ├── area_analysis.py
    ├── delta_analysis.py
    ├── indices.py
-   └── landsat_composites.py
+   ├── landsat_composites.py
+   └── qualitative_analysis.py
 ```
 
 

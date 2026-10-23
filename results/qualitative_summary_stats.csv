@@ -1,0 +1,5 @@
+Region,Expanded Forest (km²),Mean T3 NDMI,Median T3 NDMI,Std T3 NDMI,Mean T3 NBR,Median T3 NBR,Std T3 NBR,CORINE mapped expansion (km²),CORINE agriculture (km²),CORINE agriculture (%),CORINE grassland (km²),CORINE grassland (%),CORINE shrubland (km²),CORINE shrubland (%),CORINE bare_ground (km²),CORINE bare_ground (%),CORINE other (km²),CORINE other (%)
+Gallura (Limbara & Inland),530.718,0.22,0.209,0.085,0.502,0.49,0.093,534.998,138.02,25.798,4.163,0.778,256.785,47.997,14.534,2.717,121.497,22.71
+Lucanian Apennines (Val d'Agri),547.785,0.236,0.232,0.073,0.517,0.514,0.085,557.72,201.166,36.069,54.549,9.781,78.678,14.107,1.919,0.344,221.409,39.699
+Apuan Alps (Mountain Core),23.442,0.199,0.19,0.09,0.456,0.443,0.105,22.189,2.613,11.776,2.766,12.464,6.848,30.862,3.969,17.887,5.993,27.011
+Fiemme Valley & Paneveggio (Vaia Storm Area),41.631,0.223,0.217,0.06,0.471,0.463,0.068,41.856,0.722,1.724,8.181,19.546,5.788,13.829,19.673,47.002,7.492,17.9
