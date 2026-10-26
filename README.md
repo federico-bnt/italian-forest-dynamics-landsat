@@ -1,59 +1,69 @@
-# Multi-Temporal Landsat Analysis of Italian Forest Dynamics (1985–2025)
+# Multi-Temporal Landsat Analysis of Italian Forest Dynamics (1985-2025)
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![Google Earth Engine](https://img.shields.io/badge/Google%20Earth%20Engine-API-green.svg)](https://earthengine.google.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Context & Literature Baseline
-This repository contains the final project for the **Big Data Analytics** course (M.Sc. Data Science) at the **University of Potsdam**.
+## Project
 
-Rather than simply replicating existing literature, this project uses the scientific findings of two landmark national studies as its baseline:
+This project uses Landsat Collection 2 Level-2 imagery in Google Earth Engine to compare forest conditions across four Italian study areas from 1985 to 2025. It examines where forest cover increased, how vegetation indices changed, and the moisture and land-cover characteristics of expanded forest.
 
-1. **Agnoletti et al. (2022)** — *Cultural values and forest dynamics: The Italian forests in the last 150 years* (Forest Ecology and Management).
-   > Highlights that Italy's forest area has nearly tripled (from 4.2M ha in 1888 to ~11.8M ha today), with over 5.2M ha consisting of secondary forests naturally established on abandoned agricultural land and pastures.
-2. **D'Agata, Marchetti, Salvati, & Corona (2025)** — *Long-term forestation-deforestation dynamics in a socioeconomic perspective: The case of Italy, 1936–2018* (Forest Policy and Economics).
-   > Confirms the long-term trend through the lens of Forest Transition Theory, linking forest expansion in remote/mountain municipalities to rural depopulation, while urbanized flatlands experienced localized deforestation.
+The project was developed for the Big Data Analytics course in the M.Sc. Data Science program at the University of Potsdam.
 
----
+## Study Areas
 
-## Research Question & Objective
-> *How can multi-temporal Landsat imagery be used to validate the reported expansion of Italian forests (1985–2025) and characterize the condition and disturbance history of newly established forested areas?*
+The AOIs are bounding boxes defined in `config/areas.json`; they are focused study areas, not complete administrative regions.
 
-The key idea is to move beyond measuring **how much** forest cover has expanded and instead investigate **what has actually grown**. We aim to determine whether the reported expansion corresponds to healthy forest ecosystems or whether some of the newly classified forest areas include degraded, low-density, or fire-disturbed vegetation.
+| Key | Study area | Focus |
+|---|---|---|
+| `gallura` | Gallura, Limbara and inland Sardinia | Agricultural abandonment and wildfire recovery |
+| `basilicata` | Lucanian Apennines, Val d'Agri | Secondary succession |
+| `alpi_apuane` | Apuan Alps mountain core | Pasture abandonment and canopy closure |
+| `trento` | Fiemme Valley and Paneveggio | Storm Vaia disturbance and regeneration |
 
----
+## Time Periods
 
-## Case Studies & Regional Dynamics
-We analyze four focused study areas in Italy, each representing specific ecological or land-use dynamics. Their bounding boxes are defined in `config/areas.json`:
+All periods use summer imagery filtered to day-of-year 152-243 and scene cloud cover below 20%.
 
-1. **Gallura (Limbara & Inland, Sardinia):** Agro-pastoral abandonment, cork oak canopy shifts, and wildfire recovery (**NBR** focus).
-2. **Lucanian Apennines (Val d'Agri, Basilicata):** Secondary succession over former agricultural land (**NDVI** focus).
-3. **Apuan Alps (Mountain Core, Tuscany):** High-altitude pasture abandonment and canopy closure (**EVI** focus).
-4. **Fiemme Valley & Paneveggio (Trentino):** Forest disturbance and regeneration after Storm Vaia (**NBR / disturbance** focus).
+| Period | Years | Landsat collections |
+|---|---|---|
+| T1 | 1985-1991 | Landsat 5 TM |
+| T2 | 2006-2010 | Landsat 5 TM and Landsat 7 ETM+ |
+| T3 | 2022-2025 | Landsat 8 OLI and Landsat 9 OLI-2 |
 
----
+Surface reflectance is scaled using the Collection 2 Level-2 scale and offset. Cloud and cloud-shadow pixels are masked with `QA_PIXEL`. Cross-sensor harmonization is not applied, so sensor differences may contribute to observed changes.
 
-## Temporal Windows
-To capture long-term trends across 40 years of Earth Observation data, we analyze three multi-year summer compositing periods (June–September):
+## Analysis
 
-* **Period 1 (1985–1991):** Historical baseline — *Landsat 5 TM*
-* **Period 2 (2006–2010):** Intermediate transition — *Landsat 5 TM*
-* **Period 3 (2022–2025):** Recent state — *Landsat 8 OLI & Landsat 9 OLI-2*
+The notebooks create median composites and calculate NDVI, EVI, and NBR. The T3-minus-T1 analysis identifies expanded forest as pixels below the NDVI forest threshold in T1 and at or above it in T3. Water is excluded using ESA WorldCover 2021.
 
----
+The qualitative analysis compares expanded pixels with CORINE 1990 land cover and summarizes T3 NDMI and NBR within the expansion mask. CORINE origin percentages use only expanded pixels with valid CORINE coverage; the 1990 product represents source coverage from 1989 to 1998.
 
-## Proposed Workflow & Methodology
-To overcome local I/O bottlenecks and avoid storing hundreds of gigabytes of raw satellite tiles locally, the project adopts a **cloud-native geospatial Big Data pipeline** ("Bring code to data"):
+## Setup and Notebooks
+
+Install the Earth Engine Python API and geemap, authenticate with a Google account that has access to the shared GCP project, and run the notebooks from the repository root. See [GEE_SETUP.md](GEE_SETUP.md) for setup instructions.
+
+- `landsat_summer_composite.ipynb` builds regional composites, calculates index changes, and provides interactive map inspection.
+- `02_indices_analysis.ipynb` generates differential maps, summary statistics, NDVI comparison thumbnails, qualitative summaries, and T3 comparison figures. It also contains local GeoTIFF download code; generated rasters are saved under `results/TIFF/` when that cell completes successfully.
+
+## Outputs
+
+- `results/maps/`: differential NDVI and NBR maps.
+- `results/ndvi_thumbnails/`: fixed-scale T1, T2, and T3 NDVI images and comparison grid.
+- `results/qualitative_figures/`: T3 RGB/NDVI/NBR and RGB/NDVI/NDMI comparison figures.
+- `results/summary_stats.csv`: area and change summary.
+- `results/qualitative_summary_stats.csv`: CORINE origin and expanded-forest NDMI/NBR statistics.
+- `results/TIFF/`: local GeoTIFF outputs when exports complete successfully.
 
 ## Project Structure
 
 ```text
 .
+├── 02_indices_analysis.ipynb
 ├── BAND_GUIDE.md
 ├── GEE_SETUP.md
 ├── LICENSE
 ├── README.md
-├── 02_indices_analysis.ipynb
 ├── landsat_summer_composite.ipynb
 ├── config/
 │   ├── areas.json
@@ -63,20 +73,21 @@ To overcome local I/O bottlenecks and avoid storing hundreds of gigabytes of raw
 │   ├── Cultural Values and Forest Dynamics.pdf
 │   └── Forestation Deforestation Dynamics Italy 1936-2018.pdf
 └── src/
-   ├── area_analysis.py
-   ├── delta_analysis.py
-   ├── indices.py
-   ├── landsat_composites.py
-   └── qualitative_analysis.py
+    ├── area_analysis.py
+    ├── delta_analysis.py
+    ├── indices.py
+    ├── landsat_composites.py
+    └── qualitative_analysis.py
 ```
 
+## References
 
----
+- Agnoletti et al. (2022), “Cultural values and forest dynamics: The Italian forests in the last 150 years,” *Forest Ecology and Management*.
+- D'Agata, Marchetti, Salvati, and Corona (2025), “Long-term forestation-deforestation dynamics in a socioeconomic perspective: The case of Italy, 1936-2018,” *Forest Policy and Economics*.
 
-## 👥 Contributors & Authors
-* **Federico Bonato** ([federico.bonato@uni-potsdam.de](mailto:federico.bonato@uni-potsdam.de))
-* **Rishikesh Bharti** ([rishikesh.bharti@uni-potsdam.de](mailto:rishikesh.bharti@uni-potsdam.de))
+## Authors
 
-*M.Sc. Data Science — University of Potsdam*
+- Federico Bonato, [federico.bonato@uni-potsdam.de](mailto:federico.bonato@uni-potsdam.de)
+- Rishikesh Bharti, [rishikesh.bharti@uni-potsdam.de](mailto:rishikesh.bharti@uni-potsdam.de)
 
----
+M.Sc. Data Science, University of Potsdam.
