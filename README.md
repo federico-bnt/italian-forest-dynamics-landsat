@@ -37,7 +37,7 @@ Surface reflectance is scaled using the Collection 2 Level-2 scale and offset. C
 
 The notebooks create median composites and calculate NDVI, EVI, and NBR. The T3-minus-T1 analysis identifies expanded forest as pixels below the NDVI forest threshold in T1 and at or above it in T3. Water is excluded using ESA WorldCover 2021.
 
-The qualitative analysis compares expanded pixels with CORINE 1990 land cover and summarizes T3 NDMI and NBR within the expansion mask. CORINE origin percentages use only expanded pixels with valid CORINE coverage; the 1990 product represents source coverage from 1989 to 1998.
+The expanded-forest profile builds one table per region, with columns for T1, T2, and T3. The expanded-forest mask is fixed (non-forest in T1 and forest in T3), so the expanded area repeats across the columns. NDMI and NBR (mean, median, standard deviation) use each period's own composite inside that mask. CORINE land cover is matched to each epoch: T1 with CORINE 1990, T2 with CORINE 2006, and T3 with CORINE 2018. For each period the table gives the area and share of agriculture, grassland, shrubland, bare ground, and other classes inside the expanded-forest mask. "Other" includes forest, artificial, wetland, and water. CORINE is used as an independent check on land cover, not as the origin of expanded forest. The T3 comparison is a rough check because CORINE 2018 ends 4+ years before the 2022 to 2025 window.
 
 ## Setup and Notebooks
 
@@ -52,7 +52,7 @@ Install the Earth Engine Python API and geemap, authenticate with a Google accou
 - `results/ndvi_thumbnails/`: fixed-scale T1, T2, and T3 NDVI images and comparison grid.
 - `results/qualitative_figures/`: T3 RGB/NDVI/NBR and RGB/NDVI/NDMI comparison figures.
 - `results/summary_stats.csv`: area and change summary.
-- `results/qualitative_summary_stats.csv`: CORINE origin and expanded-forest NDMI/NBR statistics.
+- `results/expanded_forest_profile_<region>.csv` (one file per region, e.g. `gallura`, `basilicata`, `alpi_apuane`, `trento`): per-period expanded-forest area, NDMI/NBR statistics, and CORINE land-cover area and share inside the expansion mask.
 - `results/TIFF/`: local GeoTIFF outputs when exports complete successfully.
 
 ## Project Structure

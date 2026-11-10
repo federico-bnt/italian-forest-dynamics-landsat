@@ -7,12 +7,12 @@ import numpy as np
 
 from src.indices import add_all_indices
 
-CORINE_1990_ASSET = "COPERNICUS/CORINE/V20/100m/1990"
-CORINE_ORIGIN_GROUPS = {
-    "agriculture": [211, 212, 213, 221, 222, 223, 241, 242, 243, 244],
-    "grassland": [231, 321],
-    "shrubland": [322, 323, 324],
-    "bare_ground": [331, 332, 333, 334, 335],
+CORINE_CLASS_LABELS = ("agriculture", "grassland", "shrubland", "bare_ground", "other")
+NDMI_BANDS = {"L5_L7": ("SR_B4", "SR_B5"), "L8_L9": ("SR_B5", "SR_B6")}
+CORINE_EPOCH_ASSETS = {
+    "T1": "COPERNICUS/CORINE/V20/100m/1990",
+    "T2": "COPERNICUS/CORINE/V20/100m/2006",
+    "T3": "COPERNICUS/CORINE/V20/100m/2018",  # 2018 ends 4+ years before T3 starts
 }
 
 
@@ -26,69 +26,59 @@ def _get_region_delta(deltas: Mapping[str, ee.Image], region: str) -> ee.Image:
     )
 
 
-def _reduce_expansion_origin(
-    landcover: ee.Image,
-    expanded_mask: ee.Image,
+def _percent(part: float, total: float):
+    return 100 * part / total if total else None
+
+
+def _corine_group(code: int) -> str:
+    if code // 100 == 2:
+        return "agriculture"
+    if code == 321:
+        return "grassland"
+    if code in (322, 323, 324):
+        return "shrubland"
+    if code // 10 == 33:
+        return "bare_ground"
+    return "other"
+
+
+def _corine_class_areas(
+    corine_landcover: ee.Image,
+    valid: ee.Image,
     aoi: ee.Geometry,
     scale: int,
 ) -> dict[str, float]:
-    all_codes = [code for group in CORINE_ORIGIN_GROUPS.values() for code in group]
-    classified = landcover.remap(all_codes, [1] * len(all_codes), 0).eq(1)
-    valid_expansion = expanded_mask.And(landcover.gt(0))
-    pixel_area_km2 = ee.Image.pixelArea().divide(1_000_000)
-
-    area_bands = []
-    for group_name, class_codes in CORINE_ORIGIN_GROUPS.items():
-        class_mask = landcover.remap(class_codes, [1] * len(class_codes), 0).eq(1)
-        area_bands.append(
-            pixel_area_km2.updateMask(valid_expansion.And(class_mask)).rename(group_name)
-        )
-
-    other_mask = valid_expansion.And(classified.Not())
-    area_bands.extend(
-        [
-            pixel_area_km2.updateMask(other_mask).rename("other"),
-            pixel_area_km2.updateMask(valid_expansion).rename("mapped_total"),
-        ]
+    image = (
+        ee.Image.pixelArea()
+        .divide(1_000_000)
+        .addBands(corine_landcover)
+        .updateMask(valid)
     )
-    totals = (
-        ee.Image(area_bands)
-        .reduceRegion(
-            reducer=ee.Reducer.sum(),
-            geometry=aoi,
-            scale=scale,
-            maxPixels=1e13,
-            tileScale=4,
-        )
-        .getInfo()
-    )
-
-    mapped_total = float(totals.get("mapped_total") or 0.0)
-    result = {"CORINE mapped expansion (km²)": mapped_total}
-    for group_name in CORINE_ORIGIN_GROUPS:
-        area_km2 = float(totals.get(group_name) or 0.0)
-        result[f"CORINE {group_name} (km²)"] = area_km2
-        result[f"CORINE {group_name} (%)"] = (
-            100 * area_km2 / mapped_total if mapped_total else None
-        )
-
-    other_km2 = float(totals.get("other") or 0.0)
-    result["CORINE other (km²)"] = other_km2
-    result["CORINE other (%)"] = 100 * other_km2 / mapped_total if mapped_total else None
-    return result
+    result = image.reduceRegion(
+        reducer=ee.Reducer.sum().group(groupField=1, groupName="code"),
+        geometry=aoi,
+        scale=scale,
+        maxPixels=1e13,
+        tileScale=4,
+    ).getInfo()
+    class_km2: dict[str, float] = {}
+    for group in next(iter(result.values())):
+        label = _corine_group(int(group["code"]))
+        class_km2[label] = class_km2.get(label, 0.0) + float(group["sum"])
+    return class_km2
 
 
-def calculate_expanded_forest_quality(
+def calculate_expanded_forest_profile(
     areas: Mapping[str, ee.Geometry],
     deltas: Mapping[str, ee.Image],
-    t3_composites: Mapping[str, ee.Image],
+    period_composites: Mapping[str, Mapping[str, ee.Image]],
+    sensor_types: Mapping[str, str],
     area_info: Mapping[str, Mapping[str, object]],
     land_mask: ee.Image,
     scale: int = 30,
     corine_scale: int = 100,
 ) -> list[dict[str, object]]:
-    """Summarize T3 moisture/structure and CORINE 1990 origin within new-forest pixels."""
-    corine_landcover = ee.Image(CORINE_1990_ASSET).select("landcover")
+    """Per region and period: NDMI, NBR and CORINE land cover inside the expanded-forest mask."""
     stats_reducer = ee.Reducer.mean()
     stats_reducer = stats_reducer.combine(ee.Reducer.median(), "", True)
     stats_reducer = stats_reducer.combine(ee.Reducer.stdDev(), "", True)
@@ -96,58 +86,67 @@ def calculate_expanded_forest_quality(
 
     rows = []
     for region, aoi in areas.items():
-        expanded_mask = _get_region_delta(deltas, region).select("expanded_forest").eq(1)
-        expanded_mask = expanded_mask.updateMask(land_mask)
-
-        t3_image = t3_composites[region]
-        t3_indices = add_all_indices(t3_image, sensor_type="L8_L9")
-        ndmi = t3_image.expression(
-            "(nir - swir1) / (nir + swir1)",
-            {
-                "nir": t3_image.select("SR_B5"),
-                "swir1": t3_image.select("SR_B6"),
-            },
-        ).rename("NDMI")
-        nbr = t3_indices.select("NBR")
-
-        expanded_metrics = ee.Image(
-            [
-                ndmi.updateMask(expanded_mask),
-                nbr.updateMask(expanded_mask),
-                ee.Image.pixelArea()
-                .divide(1_000_000)
-                .updateMask(expanded_mask)
-                .rename("expanded_area_km2"),
-            ]
+        expanded = (
+            _get_region_delta(deltas, region).select("expanded_forest").eq(1).And(land_mask)
         )
-        metrics = expanded_metrics.reduceRegion(
-            reducer=stats_reducer,
-            geometry=aoi,
-            scale=scale,
-            maxPixels=1e13,
-            tileScale=4,
-        ).getInfo()
+        expanded_mask = expanded.selfMask()
+        region_name = str(area_info[region]["name"])
 
-        expanded_area = float(metrics.get("expanded_area_km2_sum") or 0.0)
-        row = {
-            "Region": str(area_info[region]["name"]),
-            "Expanded Forest (km²)": expanded_area,
-            "Mean T3 NDMI": metrics.get("NDMI_mean"),
-            "Median T3 NDMI": metrics.get("NDMI_median"),
-            "Std T3 NDMI": metrics.get("NDMI_stdDev"),
-            "Mean T3 NBR": metrics.get("NBR_mean"),
-            "Median T3 NBR": metrics.get("NBR_median"),
-            "Std T3 NBR": metrics.get("NBR_stdDev"),
-        }
-        row.update(
-            _reduce_expansion_origin(
+        for period_key, corine_asset in CORINE_EPOCH_ASSETS.items():
+            composite = period_composites[region][period_key]
+            sensor_type = sensor_types[period_key]
+            nir_band, swir1_band = NDMI_BANDS[sensor_type]
+            ndmi = composite.normalizedDifference([nir_band, swir1_band]).rename("NDMI")
+            nbr = add_all_indices(composite, sensor_type).select("NBR")
+
+            metrics = (
+                ee.Image(
+                    [
+                        ndmi.updateMask(expanded_mask),
+                        nbr.updateMask(expanded_mask),
+                        ee.Image.pixelArea()
+                        .divide(1_000_000)
+                        .updateMask(expanded_mask)
+                        .rename("expanded_area_km2"),
+                    ]
+                )
+                .reduceRegion(
+                    reducer=stats_reducer,
+                    geometry=aoi,
+                    scale=scale,
+                    maxPixels=1e13,
+                    tileScale=4,
+                )
+                .getInfo()
+            )
+
+            corine_landcover = ee.Image(corine_asset).select("landcover")
+            class_km2 = _corine_class_areas(
                 corine_landcover,
-                expanded_mask,
+                corine_landcover.gt(0).And(expanded),
                 aoi,
                 corine_scale,
             )
-        )
-        rows.append(row)
+            corine_total_km2 = sum(class_km2.values())
+
+            row = {
+                "Region": region_name,
+                "Period": period_key,
+                "CORINE year": corine_asset.split("/")[-1],
+                "Expanded Forest (km²)": float(metrics.get("expanded_area_km2_sum") or 0.0),
+                "Mean NDMI": metrics.get("NDMI_mean"),
+                "Median NDMI": metrics.get("NDMI_median"),
+                "Std NDMI": metrics.get("NDMI_stdDev"),
+                "Mean NBR": metrics.get("NBR_mean"),
+                "Median NBR": metrics.get("NBR_median"),
+                "Std NBR": metrics.get("NBR_stdDev"),
+                "CORINE mapped expansion (km²)": corine_total_km2,
+            }
+            for label in CORINE_CLASS_LABELS:
+                label_km2 = class_km2.get(label, 0.0)
+                row[f"CORINE {label} (km²)"] = label_km2
+                row[f"CORINE {label} (%)"] = _percent(label_km2, corine_total_km2)
+            rows.append(row)
 
     return rows
 

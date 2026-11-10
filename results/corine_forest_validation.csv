@@ -1,0 +1,13 @@
+Region,Period,CORINE year,Landsat forest (%),CORINE forest (%),Difference (pp),Landsat valid area (km²),CORINE valid area (km²)
+Gallura (Limbara & Inland),T1,1990,12.725,17.974,-5.249,1531.229,1529.953
+Gallura (Limbara & Inland),T2,2006,27.33,20.889,6.441,1531.229,1529.953
+Gallura (Limbara & Inland),T3,2018,47.207,20.482,26.726,1531.229,1529.953
+Lucanian Apennines (Val d'Agri),T1,1990,38.695,45.193,-6.498,2253.251,2253.146
+Lucanian Apennines (Val d'Agri),T2,2006,55.019,44.788,10.23,2253.251,2253.146
+Lucanian Apennines (Val d'Agri),T3,2018,62.417,43.648,18.77,2253.251,2253.146
+Apuan Alps (Mountain Core),T1,1990,88.467,65.326,23.141,758.709,760.621
+Apuan Alps (Mountain Core),T2,2006,87.931,67.198,20.733,758.019,760.621
+Apuan Alps (Mountain Core),T3,2018,90.193,66.828,23.365,759.238,760.621
+Fiemme Valley & Paneveggio (Vaia Storm Area),T1,1990,80.018,56.048,23.97,598.962,614.675
+Fiemme Valley & Paneveggio (Vaia Storm Area),T2,2006,79.2,56.437,22.763,608.963,614.675
+Fiemme Valley & Paneveggio (Vaia Storm Area),T3,2018,84.438,56.629,27.808,606.166,614.675

@@ -1,0 +1,4 @@
+Region,Period,CORINE year,Expanded Forest (km²),Mean NDMI,Median NDMI,Std NDMI,Mean NBR,Median NBR,Std NBR,CORINE mapped expansion (km²),CORINE agriculture (km²),CORINE agriculture (%),CORINE grassland (km²),CORINE grassland (%),CORINE shrubland (km²),CORINE shrubland (%),CORINE bare_ground (km²),CORINE bare_ground (%),CORINE other (km²),CORINE other (%)
+Lucanian Apennines (Val d'Agri),T1,1990,547.785,0.069,0.072,0.069,0.315,0.322,0.09,557.72,209.263,37.521,46.452,8.329,78.678,14.107,1.919,0.344,221.409,39.699
+Lucanian Apennines (Val d'Agri),T2,2006,547.785,0.16,0.162,0.08,0.438,0.443,0.1,557.72,222.684,39.928,40.667,7.292,71.839,12.881,2.854,0.512,219.676,39.388
+Lucanian Apennines (Val d'Agri),T3,2018,547.785,0.236,0.232,0.073,0.517,0.514,0.085,557.72,220.297,39.5,34.038,6.103,83.181,14.914,9.636,1.728,210.568,37.755
