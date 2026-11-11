@@ -44,21 +44,27 @@ The expanded-forest profile builds one table per region, with columns for T1, T2
 Install the Earth Engine Python API and geemap, authenticate with a Google account that has access to the shared GCP project, and run the notebooks from the repository root. See [GEE_SETUP.md](GEE_SETUP.md) for setup instructions.
 
 - `landsat_summer_composite.ipynb` builds regional composites, calculates index changes, and provides interactive map inspection.
-- `02_indices_analysis.ipynb` generates differential maps, summary statistics, NDVI comparison thumbnails, qualitative summaries, and T3 comparison figures. It also contains local GeoTIFF download code; generated rasters are saved under `results/TIFF/` when that cell completes successfully.
+- `02_indices_analysis.ipynb` generates differential maps, summary statistics, NDVI comparison thumbnails, qualitative summaries, and T3 comparison figures.
 
 ## Outputs
 
-- `results/maps/`: differential NDVI and NBR maps.
-- `results/ndvi_thumbnails/`: fixed-scale T1, T2, and T3 NDVI images and comparison grid.
-- `results/qualitative_figures/`: T3 RGB/NDVI/NBR and RGB/NDVI/NDMI comparison figures.
-- `results/summary_stats.csv`: area and change summary.
-- `results/expanded_forest_profile_<region>.csv` (one file per region, e.g. `gallura`, `basilicata`, `alpi_apuane`, `trento`): per-period expanded-forest area, NDMI/NBR statistics, and CORINE land-cover area and share inside the expansion mask.
-- `results/TIFF/`: local GeoTIFF outputs when exports complete successfully.
+All CSV tables are saved in `results/csv/` and all figures in `results/figures/`.
+
+- `results/csv/summary_stats.csv`: area and change summary.
+- `results/csv/expanded_forest_profile_<region>.csv` (one file per region, e.g. `gallura`, `basilicata`, `alpi_apuane`, `trento`): per-period expanded-forest area, NDMI/NBR statistics, and CORINE land-cover area and share inside the expansion mask.
+- `results/figures/maps/`: differential NDVI and NBR maps.
+- `results/figures/ndvi_thumbnails/`: fixed-scale T1, T2, and T3 NDVI images and comparison grid.
+- `results/figures/qualitative_figures/`: T3 RGB/NDVI/NBR and RGB/NDVI/NDMI comparison figures.
+- `results/figures/study_areas/italy_study_areas.png`: Italy locator map (`plot/plot_study_areas.py`).
+- `results/figures/quantitative_expansion/`: per-region RGB figures with expansion and loss overlays (`plot/plot_quantitative_expansion.py`).
+- `results/figures/qualitative_triptych/`: per-region NDVI, NDMI, and NBR panels (`plot/plot_qualitative_triptych.py`).
+- `results/figures/growth_barplot/`: per-region bar charts of the percent change in NDVI forest cover (share of pixels with NDVI at or above 0.6) relative to T1, for T1, T2, and T3, saved as `{region}_growth_barplot.png` at 300 DPI (`plot/plot_growth_barplot.py`).
 
 ## Project Structure
 
 ```text
 .
+├── .gitignore
 ├── 02_indices_analysis.ipynb
 ├── BAND_GUIDE.md
 ├── GEE_SETUP.md
@@ -69,6 +75,26 @@ Install the Earth Engine Python API and geemap, authenticate with a Google accou
 │   ├── areas.json
 │   ├── project_id.json
 │   └── time_period.json
+├── plot/
+│   ├── plot_growth_barplot.py
+│   ├── plot_qualitative_triptych.py
+│   ├── plot_quantitative_expansion.py
+│   └── plot_study_areas.py
+├── results/
+│   ├── csv/
+│   │   ├── expanded_forest_profile_alpi_apuane.csv
+│   │   ├── expanded_forest_profile_basilicata.csv
+│   │   ├── expanded_forest_profile_gallura.csv
+│   │   ├── expanded_forest_profile_trento.csv
+│   │   └── summary_stats.csv
+│   └── figures/
+│       ├── growth_barplot/
+│       ├── maps/
+│       ├── ndvi_thumbnails/
+│       ├── qualitative_figures/
+│       ├── qualitative_triptych/
+│       ├── quantitative_expansion/
+│       └── study_areas/
 ├── papers/
 │   ├── Cultural Values and Forest Dynamics.pdf
 │   └── Forestation Deforestation Dynamics Italy 1936-2018.pdf

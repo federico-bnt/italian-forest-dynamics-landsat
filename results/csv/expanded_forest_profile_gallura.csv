@@ -1,0 +1,4 @@
+Region,Period,CORINE year,Expanded Forest (km²),Forest cover (%),Mean NDMI,Median NDMI,Std NDMI,Mean NBR,Median NBR,Std NBR,CORINE mapped expansion (km²),CORINE agriculture (km²),CORINE agriculture (%),CORINE grassland (km²),CORINE grassland (%),CORINE shrubland (km²),CORINE shrubland (%),CORINE bare_ground (km²),CORINE bare_ground (%),CORINE other (km²),CORINE other (%)
+Gallura (Limbara & Inland),T1,1990,530.718,12.725,0.058,0.061,0.075,0.31,0.314,0.091,534.998,138.02,25.798,4.163,0.778,256.785,47.997,14.534,2.717,121.497,22.71
+Gallura (Limbara & Inland),T2,2006,530.718,27.331,0.135,0.131,0.086,0.405,0.4,0.101,534.998,119.559,22.348,3.015,0.564,250.072,46.743,13.123,2.453,149.229,27.893
+Gallura (Limbara & Inland),T3,2018,530.718,47.21,0.22,0.209,0.085,0.502,0.49,0.093,534.998,119.14,22.269,0.454,0.085,255.071,47.677,13.229,2.473,147.105,27.496

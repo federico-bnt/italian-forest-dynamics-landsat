@@ -77,8 +77,9 @@ def calculate_expanded_forest_profile(
     land_mask: ee.Image,
     scale: int = 30,
     corine_scale: int = 100,
+    forest_ndvi_threshold: float = 0.6,
 ) -> list[dict[str, object]]:
-    """Per region and period: NDMI, NBR and CORINE land cover inside the expanded-forest mask."""
+    """Per region and period: NDMI, NBR inside the expanded-forest mask, NDVI forest cover and CORINE land cover."""
     stats_reducer = ee.Reducer.mean()
     stats_reducer = stats_reducer.combine(ee.Reducer.median(), "", True)
     stats_reducer = stats_reducer.combine(ee.Reducer.stdDev(), "", True)
@@ -97,13 +98,18 @@ def calculate_expanded_forest_profile(
             sensor_type = sensor_types[period_key]
             nir_band, swir1_band = NDMI_BANDS[sensor_type]
             ndmi = composite.normalizedDifference([nir_band, swir1_band]).rename("NDMI")
-            nbr = add_all_indices(composite, sensor_type).select("NBR")
+            indices = add_all_indices(composite, sensor_type)
+            nbr = indices.select("NBR")
+            forest_cover = (
+                indices.select("NDVI").gte(forest_ndvi_threshold).rename("forest_cover")
+            )
 
             metrics = (
                 ee.Image(
                     [
                         ndmi.updateMask(expanded_mask),
                         nbr.updateMask(expanded_mask),
+                        forest_cover.updateMask(land_mask),
                         ee.Image.pixelArea()
                         .divide(1_000_000)
                         .updateMask(expanded_mask)
@@ -129,11 +135,15 @@ def calculate_expanded_forest_profile(
             )
             corine_total_km2 = sum(class_km2.values())
 
+            forest_cover_mean = metrics.get("forest_cover_mean")
+            forest_cover_pct = None if forest_cover_mean is None else 100 * forest_cover_mean
+
             row = {
                 "Region": region_name,
                 "Period": period_key,
                 "CORINE year": corine_asset.split("/")[-1],
                 "Expanded Forest (km²)": float(metrics.get("expanded_area_km2_sum") or 0.0),
+                "Forest cover (%)": forest_cover_pct,
                 "Mean NDMI": metrics.get("NDMI_mean"),
                 "Median NDMI": metrics.get("NDMI_median"),
                 "Std NDMI": metrics.get("NDMI_stdDev"),
